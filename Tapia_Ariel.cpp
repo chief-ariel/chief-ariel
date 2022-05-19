@@ -1,68 +1,82 @@
 #include <iostream>
-#include <vector>
-
+#include <cmath>
 using namespace std;
 
-int main()
-{ int disks,to,from,move=0, candidate;
-
-    cout<< "Enter the number of disks to move : ";
-    cin >> disks;
-
-    vector <int> tower[3]; // array of 3 vectors that signify the towers
+bool okay(int q[], int c, int n) {
+    for (int i = 0; i < c; i++)// loops through the 1-d array up to current column
 
 
+        if ((q[c]/n - q[i]/n) == abs(q[c]%n - q[i]%n)) // if col difference == row difference, bishop c and i are diagonal to each other
+             // row # = q[...] % n
+            // col # = q[...] / n
+         return false;
+   return true;
+}
+
+int kBishops(int n, int k) {
+
+    int* q = new int[k];// allocate memory for the array based on k (num of bishops)
+
+    // place bishop at firstbox
+    q[0] = 0;
+
+    int c = 0, solutions = 0;
 
 
-     //initialize the towers
-
-    for(int i = disks+1; i > 0; i--){ // number of disks plus one, the extra one signifyies the tower itself
-        tower[0].push_back(i);   // adds user inputted number of disks to first tower
-    }
-    tower[1].push_back(disks+1);
-    tower[2].push_back(disks+1); // other towers just have "disks + 1" as the empty tower itself
-
-    from = 0; //since were starting at 0 tower thats the "from" tower
-
-    if((disks % 2) == 1) // depending on whether we have even or odd disks the to tower is either 1 or 2
-        to = 1;
-        else to = 2;
+    while (c >= 0) {
+        c++;// increment column
 
 
-    candidate = 1; // next disk being moved
+        if (c == k) {  // if end of board is reached increment solution counter and backtrack
+
+          solutions++;
+          c--;
+        }
+        else
+
+            q[c] = q[c-1]; // decrement row to avoid duplicate solutions
+
+        while (c >= 0) {
+
+         q[c]++; // increment row
+
+            if (q[c] == n*n) // if you reach the end of the last column
+                // backtrack
+                c--;
 
 
-    while(tower[1].size() < disks + 1){ //while the "to" tower has less disks than the total number of disks we loop
-    cout << "move number " << ++move<< ":  Transfer disk " << candidate << " from tower " << char(from + 65) << " to tower " <<char(to + 65) << endl;
-
-    tower[to].push_back(tower[from].back());
-    tower[from].pop_back();
-
-     // get the next "from" tower -- it cant be the most recent "to" tower
-
-     if(tower[(to + 1) % 3].back() < tower[(to + 2) % 3].back())
-        from =(to + 1) % 3;
-     else from =(to + 2) % 3;
-
-
-
-     // get the next "to" tower --
-    if((disks % 2) == 1){ // IF DISKS are odd
-        if(tower[from].back() < tower[(from + 1) % 3].back())
-          to =(from + 1) % 3;
-        else to = (from + 2) % 3; // move to the right
+                else if (okay(q, c, n)) break;// ok function for bishops
+        }
     }
 
-    else                                                       // IF DISKS are even
-        if(tower[from].back() < tower[(from + 2) % 3].back())
-            to =(from + 2) % 3;
-        else to = (from + 1) % 3; // move to the left
+
+    delete [] q;// delete array so memory returns
+    return solutions;
+}
+
+int main() {
+
+    int n, k;// n is size of one column (n*n = board size); K is number of bishops
 
 
 
 
-    candidate = tower[from].back();
 
+    while (true) { // infinite loop for inputs
+
+      cout << "Enter value of n: ";
+      cin >> n;
+
+      if (n == -1) // if user inputs -1 break.
+         break;
+
+      cout << "Enter number of bishops k: ";
+
+
+      cin >> k;
+
+
+      cout << "number of solutions: " << kBishops(n, k) << "\n"; // calls kBishop method to get solutions
     }
-
+  return 0;
 }
