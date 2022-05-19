@@ -1,95 +1,85 @@
 #include <iostream>
-#include <cmath>
+
 
 
 using namespace std;
 
-void Print(int q[]){
-    static int solution = 0;
-    solution++;
-    for(int i= 0; i< 8; i++){
-            cout << endl;
-            for(int j = 0; j < 8; j++){
-                if (q[j]==i)
-                    cout << "1";
-                else
-        cout << "0";
+bool ok(int q[], int c) {
+    int hlpr[8][5]={
+        {-1}, // square 0
+        {0,-1}, // square 1
+        {0,-1}, // square 2
+        {0,1,2,-1},// square 3
+        {0,1,3,-1}, // square 4
+        { 1,4,-1},// square 5
+        {2,3,4,-1},// square 6
+        {3,4,5,6,-1} // square 7
 
 
+    };
 
-}
-    }
-    cout << "solutions: " << solution;
+    for (int i=0;i<c;i++){
+        if(q[c]==q[i]) return false;
 
-}
-bool okay (int q[],int c){ // so valid
+    };
 
-
-          for ( int i = 0; i < c ; i++){ // loops through the 1-d array up to current column
-          if(q[i] == q[c] || (c-i)== abs(q[c]- q[i])) // if the row numbers are equal they are on the same row and if the absolute difference of rows and columns are equal theres a diagonal conflict (giga brain asf)
-           return false;
-          }
-
-
-            return true;
-
-
-
-
-
-
-
-}
-void backtrack(  int q[],int &c){
-    c--;
-    if(c ==-1){
-        exit(1);
-    }
-    q[c]++;
-    if(q[c]==8) backtrack(q,c);
-
-
-
-
-
-}
-
-
-int main()
-{                    // c = column
-    int q [8] = {0};int c = 1; // (q [0,1,2,3,4,5,6,7) = the columns
-                //  q[0] = 0 because thats where we start putting the queen on the upper left square
-    q [0] = 0;
-
-while(c != -1){
-
-        if (c==8){
-        Print(q);
-        backtrack(q,c);
-                }
-
-
-      if(q[c] == 8 ){
-
-    backtrack(q,c);
-
+    for (int i = 0; hlpr[c][i]!=-1 ; i++){ // loop until helper array inside of q[c] reaches -1 checking adjacents of square c
+        if(abs(q[c] - q[hlpr[c][i]]) == 1) return false;//if whatever is inside of q[c] has an adjacent of either +1 or -1
         }
-
-      if(okay (q, c)== true){
-                c++;
-                if (c < 9) q[c] = 0;
-
-
-      }
-      else q[c]++;
-
-
-
-
-
-
-
-
-
-    }
+        return true; //if none of the others were true then it is so valid
 }
+
+void print(int q[],int c) {
+   static int solutions = 1;
+
+   cout << "Solutions #" << solutions << ":" << endl;
+   cout << " " << " " << q[0] << q[1] << endl;
+   cout << " " << q[2] << q[3] << q[4] << q[5] << endl;
+   cout << " " << " " << q[6] << q[7] << endl;
+
+   cout << endl;
+   solutions++;
+}
+
+void backtrack(int q[], int &c){//idk why it works only with address of c and not c itself
+    c--;
+   if (c < 0) exit(1); //once loop stops program exits
+   q[c]++;
+   if (q[c] == 9) backtrack(q, c); // stops backtracked column from going over 8
+ }
+
+
+
+
+
+
+
+int main() {
+   int q[8] = {1,1,1,1,1,1,1,1};
+   int c = 1;
+
+
+
+   while (c > -1)
+   {
+         if (c == 8)//found a solution
+         {
+          print(q,c); //print and backtrack
+          backtrack(q, c);
+         }
+ if (q[c] == 9) backtrack(q, c); //if q[c] goes over 8 it will get backtracked
+     if (ok(q, c) == true)
+     {
+
+       c++;//increment c
+       if (c < 9) q[c] = 1; /// reset c
+     }
+
+
+     else q[c]++; // if number isnt valid increment row
+   }
+ }
+
+
+
+
