@@ -1,82 +1,95 @@
 #include <iostream>
 #include <cmath>
+
+
 using namespace std;
 
-bool okay(int q[], int c, int n) {
-    for (int i = 0; i < c; i++)// loops through the 1-d array up to current column
+void Print(int q[]){
+    static int solution = 0;
+    solution++;
+    for(int i= 0; i< 8; i++){
+            cout << endl;
+            for(int j = 0; j < 8; j++){
+                if (q[j]==i)
+                    cout << "1";
+                else
+        cout << "0";
 
 
-        if ((q[c]/n - q[i]/n) == abs(q[c]%n - q[i]%n)) // if col difference == row difference, bishop c and i are diagonal to each other
-             // row # = q[...] % n
-            // col # = q[...] / n
-         return false;
-   return true;
+
+}
+    }
+    cout << "solutions: " << solution;
+
+}
+bool okay (int q[],int c){ // so valid
+
+
+          for ( int i = 0; i < c ; i++){ // loops through the 1-d array up to current column
+          if(q[i] == q[c] || (c-i)== abs(q[c]- q[i])) // if the row numbers are equal they are on the same row and if the absolute difference of rows and columns are equal theres a diagonal conflict (giga brain asf)
+           return false;
+          }
+
+
+            return true;
+
+
+
+
+
+
+
+}
+void backtrack(  int q[],int &c){
+    c--;
+    if(c ==-1){
+        exit(1);
+    }
+    q[c]++;
+    if(q[c]==8) backtrack(q,c);
+
+
+
+
+
 }
 
-int kBishops(int n, int k) {
 
-    int* q = new int[k];// allocate memory for the array based on k (num of bishops)
+int main()
+{                    // c = column
+    int q [8] = {0};int c = 1; // (q [0,1,2,3,4,5,6,7) = the columns
+                //  q[0] = 0 because thats where we start putting the queen on the upper left square
+    q [0] = 0;
 
-    // place bishop at firstbox
-    q[0] = 0;
+while(c != -1){
 
-    int c = 0, solutions = 0;
-
-
-    while (c >= 0) {
-        c++;// increment column
+        if (c==8){
+        Print(q);
+        backtrack(q,c);
+                }
 
 
-        if (c == k) {  // if end of board is reached increment solution counter and backtrack
+      if(q[c] == 8 ){
 
-          solutions++;
-          c--;
+    backtrack(q,c);
+
         }
-        else
 
-            q[c] = q[c-1]; // decrement row to avoid duplicate solutions
-
-        while (c >= 0) {
-
-         q[c]++; // increment row
-
-            if (q[c] == n*n) // if you reach the end of the last column
-                // backtrack
-                c--;
+      if(okay (q, c)== true){
+                c++;
+                if (c < 9) q[c] = 0;
 
 
-                else if (okay(q, c, n)) break;// ok function for bishops
-        }
+      }
+      else q[c]++;
+
+
+
+
+
+
+
+
+
     }
-
-
-    delete [] q;// delete array so memory returns
-    return solutions;
-}
-
-int main() {
-
-    int n, k;// n is size of one column (n*n = board size); K is number of bishops
-
-
-
-
-
-    while (true) { // infinite loop for inputs
-
-      cout << "Enter value of n: ";
-      cin >> n;
-
-      if (n == -1) // if user inputs -1 break.
-         break;
-
-      cout << "Enter number of bishops k: ";
-
-
-      cin >> k;
-
-
-      cout << "number of solutions: " << kBishops(n, k) << "\n"; // calls kBishop method to get solutions
-    }
-  return 0;
 }
